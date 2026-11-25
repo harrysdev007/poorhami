@@ -12,6 +12,7 @@ import {
   Download,
   Shuffle,
   Check,
+  Copy,
   RotateCw,
 } from 'lucide-react'
 import * as THREE from 'three'
@@ -19,6 +20,8 @@ import Scene from './scene/Scene.jsx'
 import GalleryScene from './scene/GalleryScene.jsx'
 import { MEME_ITEMS } from './scene/HologramGallery.jsx'
 import PfpStudioScene, { PFP_BACKDROPS } from './scene/PfpStudioScene.jsx'
+
+const CONTRACT_ADDRESS = 'HpBSP6C2hA6Efew85BJcGMtsCrGPxjpvjjXWD6aApump'
 
 const HAMSTER_LINES = [
   "Wallet's empty, bro...",
@@ -69,6 +72,22 @@ export default function App() {
   const [freeCamera, setFreeCamera] = useState(false)
   const [toast, setToast] = useState(null)
   const [selectedMeme, setSelectedMeme] = useState(null)
+  const [caCopied, setCaCopied] = useState(false)
+
+  const handleCopyCa = useCallback(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(CONTRACT_ADDRESS).catch(() => {})
+    } else {
+      const el = document.createElement('textarea')
+      el.value = CONTRACT_ADDRESS
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+    }
+    setCaCopied(true)
+    setTimeout(() => setCaCopied(false), 2000)
+  }, [])
 
   // PFP Studio state
   const [pfpBackdrop, setPfpBackdrop] = useState('cyber')
@@ -267,7 +286,24 @@ export default function App() {
             <span className="brand-name">$POORHAMI</span>
           </button>
 
-          {page !== 'home' && (
+          {page === 'home' ? (
+            <button
+              type="button"
+              className={`ca-pill ${caCopied ? 'copied' : ''}`}
+              onClick={handleCopyCa}
+              title="Click to copy Contract Address"
+            >
+              <span className="ca-tag">CA</span>
+              <span className="ca-full">{CONTRACT_ADDRESS}</span>
+              <span className="ca-short">
+                {CONTRACT_ADDRESS.slice(0, 6)}...{CONTRACT_ADDRESS.slice(-6)}
+              </span>
+              <span className="ca-copy-icon">
+                {caCopied ? <Check size={14} /> : <Copy size={14} />}
+                <span>{caCopied ? 'COPIED' : ''}</span>
+              </span>
+            </button>
+          ) : (
             <button
               type="button"
               className="portal-btn portal-btn-up"
