@@ -147,10 +147,11 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
       <VoxelMeadow windStrength={windStrength} />
       <Fireflies count={52} />
 
-      {/* Levitating 3D pixel title on the left */}
+      {/* Levitating 3D pixel title + subtitle on the left */}
       <VoxelTitle
         text="$POORHAMI"
-        position={[-1.02, 0.26, 0.45]}
+        subtitle="AVERAGE MEMECOIN TRADER"
+        position={[-1.02, 0.42, 0.45]}
         rotation={[0.03, 0.16, 0.015]}
         scale={0.68}
       />

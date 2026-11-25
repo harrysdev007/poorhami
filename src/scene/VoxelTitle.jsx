@@ -12,42 +12,6 @@ const GLYPHS = {
     '####.',
     '..#..',
   ],
-  P: [
-    '####.',
-    '#...#',
-    '#...#',
-    '####.',
-    '#....',
-    '#....',
-    '#....',
-  ],
-  O: [
-    '.###.',
-    '#...#',
-    '#...#',
-    '#...#',
-    '#...#',
-    '#...#',
-    '.###.',
-  ],
-  R: [
-    '####.',
-    '#...#',
-    '#...#',
-    '####.',
-    '#.#..',
-    '#..#.',
-    '#...#',
-  ],
-  H: [
-    '#...#',
-    '#...#',
-    '#...#',
-    '#####',
-    '#...#',
-    '#...#',
-    '#...#',
-  ],
   A: [
     '.###.',
     '#...#',
@@ -57,11 +21,47 @@ const GLYPHS = {
     '#...#',
     '#...#',
   ],
-  M: [
+  C: [
+    '.###.',
     '#...#',
-    '##.##',
-    '#.#.#',
+    '#....',
+    '#....',
+    '#....',
     '#...#',
+    '.###.',
+  ],
+  D: [
+    '####.',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '####.',
+  ],
+  E: [
+    '#####',
+    '#....',
+    '#....',
+    '####.',
+    '#....',
+    '#....',
+    '#####',
+  ],
+  G: [
+    '.###.',
+    '#...#',
+    '#....',
+    '#.###',
+    '#...#',
+    '#...#',
+    '.###.',
+  ],
+  H: [
+    '#...#',
+    '#...#',
+    '#...#',
+    '#####',
     '#...#',
     '#...#',
     '#...#',
@@ -75,13 +75,77 @@ const GLYPHS = {
     '..#..',
     '.###.',
   ],
+  M: [
+    '#...#',
+    '##.##',
+    '#.#.#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+  ],
+  N: [
+    '#...#',
+    '##..#',
+    '#.#.#',
+    '#..##',
+    '#...#',
+    '#...#',
+    '#...#',
+  ],
+  O: [
+    '.###.',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '.###.',
+  ],
+  P: [
+    '####.',
+    '#...#',
+    '#...#',
+    '####.',
+    '#....',
+    '#....',
+    '#....',
+  ],
+  R: [
+    '####.',
+    '#...#',
+    '#...#',
+    '####.',
+    '#.#..',
+    '#..#.',
+    '#...#',
+  ],
+  T: [
+    '#####',
+    '..#..',
+    '..#..',
+    '..#..',
+    '..#..',
+    '..#..',
+    '..#..',
+  ],
+  V: [
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '.#.#.',
+    '..#..',
+  ],
+  ' ': [],
 }
 
 const VOXEL_SIZE = 0.068
 const VOXEL_STEP = 0.072
 const LETTER_GAP = 1.35 // in voxel columns
 
-function VoxelLetter({ char, xOffset, index, boxGeo }) {
+function VoxelLetter({ char, xOffset, index, boxGeo, isSubtitle = false }) {
   const groupRef = useRef()
   const isDollar = char === '$'
 
@@ -96,8 +160,7 @@ function VoxelLetter({ char, xOffset, index, boxGeo }) {
         if (pattern[r][c] === '#') {
           const x = (c - (cols - 1) / 2) * VOXEL_STEP
           const y = ((rows - 1) / 2 - r) * VOXEL_STEP
-          const t = r / Math.max(1, rows - 1) // 0 top -> 1 bottom
-          list.push({ x, y, t })
+          list.push({ x, y })
         }
       }
     }
@@ -107,9 +170,9 @@ function VoxelLetter({ char, xOffset, index, boxGeo }) {
   // Shared materials per letter for crisp 3D extrusion & subtle bloom glow
   const { frontMat, sideMat } = useMemo(() => {
     const front = new THREE.MeshStandardMaterial({
-      color: isDollar ? '#86efac' : '#f0f9ff',
-      emissive: isDollar ? '#22c55e' : '#7dd3fc',
-      emissiveIntensity: isDollar ? 0.65 : 0.42,
+      color: isDollar ? '#86efac' : isSubtitle ? '#bae6fd' : '#f0f9ff',
+      emissive: isDollar ? '#22c55e' : isSubtitle ? '#38bdf8' : '#7dd3fc',
+      emissiveIntensity: isDollar ? 0.65 : isSubtitle ? 0.48 : 0.42,
       roughness: 0.25,
       metalness: 0.15,
     })
@@ -117,22 +180,24 @@ function VoxelLetter({ char, xOffset, index, boxGeo }) {
     const back = new THREE.MeshStandardMaterial({
       color: isDollar ? '#064e3b' : '#0b1d5e',
       emissive: isDollar ? '#022c22' : '#050b2e',
-      emissiveIntensity: 0.2,
+      emissiveIntensity: 0.22,
       roughness: 0.4,
       metalness: 0.25,
     })
 
     return { frontMat: front, sideMat: back }
-  }, [isDollar])
+  }, [isDollar, isSubtitle])
 
   useFrame((state) => {
     if (!groupRef.current) return
     const t = state.clock.elapsedTime
-    const wave = Math.sin(t * 2.1 - index * 0.52)
-    groupRef.current.position.y = wave * 0.075
-    groupRef.current.rotation.x = Math.cos(t * 1.4 - index * 0.4) * 0.06
-    groupRef.current.rotation.z = Math.sin(t * 1.6 - index * 0.45) * 0.045
+    const wave = Math.sin(t * 2.1 - index * (isSubtitle ? 0.32 : 0.52))
+    groupRef.current.position.y = wave * (isSubtitle ? 0.05 : 0.075)
+    groupRef.current.rotation.x = Math.cos(t * 1.4 - index * 0.4) * 0.055
+    groupRef.current.rotation.z = Math.sin(t * 1.6 - index * 0.45) * 0.04
   })
+
+  if (blocks.length === 0) return null
 
   return (
     <group ref={groupRef} position={[xOffset, 0, 0]}>
@@ -158,32 +223,37 @@ function VoxelLetter({ char, xOffset, index, boxGeo }) {
   )
 }
 
+function buildLine(text, gapMultiplier = 1) {
+  const chars = text.toUpperCase().split('')
+  const colWidth = 5
+  const stride = (colWidth + LETTER_GAP * gapMultiplier) * VOXEL_STEP
+  const totalWidth = (chars.length - 1) * stride
+  return chars.map((char, index) => ({
+    char,
+    index,
+    xOffset: index * stride - totalWidth / 2,
+  }))
+}
+
 export default function VoxelTitle({
   text = '$POORHAMI',
-  position = [-1.02, 0.26, 0.45],
+  subtitle = 'AVERAGE MEMECOIN TRADER',
+  position = [-1.02, 0.42, 0.45],
   rotation = [0.03, 0.16, 0.015],
   scale = 0.68,
 }) {
   const rootRef = useRef()
   const boxGeo = useMemo(() => new THREE.BoxGeometry(1, 1, 1), [])
 
-  const letters = useMemo(() => {
-    const chars = text.toUpperCase().split('')
-    const colWidth = 5
-    const stride = (colWidth + LETTER_GAP) * VOXEL_STEP
-    const totalWidth = (chars.length - 1) * stride
-
-    return chars.map((char, index) => ({
-      char,
-      index,
-      xOffset: index * stride - totalWidth / 2,
-    }))
-  }, [text])
+  const mainLetters = useMemo(() => buildLine(text, 1), [text])
+  const subLetters = useMemo(
+    () => (subtitle ? buildLine(subtitle, 0.85) : []),
+    [subtitle]
+  )
 
   useFrame((state) => {
     if (!rootRef.current) return
     const t = state.clock.elapsedTime
-    // Gentle overall float + subtle pointer responsiveness
     rootRef.current.position.y = position[1] + Math.sin(t * 1.1) * 0.06
     rootRef.current.rotation.y = THREE.MathUtils.lerp(
       rootRef.current.rotation.y,
@@ -199,15 +269,32 @@ export default function VoxelTitle({
 
   return (
     <group ref={rootRef} position={position} rotation={rotation} scale={scale}>
-      {letters.map((item) => (
+      {/* Main title: $POORHAMI */}
+      {mainLetters.map((item) => (
         <VoxelLetter
-          key={`${item.char}-${item.index}`}
+          key={`main-${item.char}-${item.index}`}
           char={item.char}
           xOffset={item.xOffset}
           index={item.index}
           boxGeo={boxGeo}
         />
       ))}
+
+      {/* Matching 3D pixel subtitle underneath */}
+      {subLetters.length > 0 && (
+        <group position={[0, -0.52, 0.05]} scale={0.39}>
+          {subLetters.map((item) => (
+            <VoxelLetter
+              key={`sub-${item.char}-${item.index}`}
+              char={item.char}
+              xOffset={item.xOffset}
+              index={item.index}
+              boxGeo={boxGeo}
+              isSubtitle
+            />
+          ))}
+        </group>
+      )}
     </group>
   )
 }
