@@ -1,5 +1,5 @@
 import React, { Suspense, useMemo, useRef, useEffect } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import {
   ContactShadows,
   Environment,
@@ -252,19 +252,30 @@ export default function PfpStudioScene({
   aura,
   spin,
 }) {
+  const { size, camera } = useThree()
+  const isMobile = size.width < 768
   const theme = PFP_BACKDROPS[backdrop] || PFP_BACKDROPS.moon
+
+  useEffect(() => {
+    if (isMobile) {
+      camera.position.set(0, 0.15, 7.25)
+    } else {
+      camera.position.set(0, 0.25, 4.15)
+    }
+    camera.updateProjectionMatrix()
+  }, [isMobile, camera])
 
   return (
     <>
       <StudioBackdrop theme={theme} />
 
       <OrbitControls
-        target={[0, 0.12, 0]}
+        target={isMobile ? [0, -0.92, 0] : [0, 0.12, 0]}
         enableDamping
         dampingFactor={0.07}
         enablePan={false}
-        minDistance={2.8}
-        maxDistance={6.5}
+        minDistance={3.0}
+        maxDistance={8.5}
         maxPolarAngle={Math.PI * 0.56}
         minPolarAngle={Math.PI * 0.25}
       />

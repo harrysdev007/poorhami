@@ -11,6 +11,8 @@ export const MEME_ITEMS = [
     caption: 'Late night charts, cold coffee, and red candles only.',
     position: [-3.45, 0.35, -1.15],
     rotation: [0, 0.36, 0.02],
+    mobilePosition: [-0.78, 1.52, 0.05],
+    mobileRotation: [0, 0.1, 0.015],
   },
   {
     id: 2,
@@ -19,6 +21,8 @@ export const MEME_ITEMS = [
     caption: 'Washing the last pair of socks with $1 coffee.',
     position: [-1.78, 0.78, -0.35],
     rotation: [0, 0.18, -0.015],
+    mobilePosition: [0.78, 1.52, 0.05],
+    mobileRotation: [0, -0.1, -0.015],
   },
   {
     id: 3,
@@ -27,6 +31,8 @@ export const MEME_ITEMS = [
     caption: 'Empty fries box, ripped Poorhami hoodie, rainy window.',
     position: [0.0, 0.55, 0.15],
     rotation: [0, 0.0, 0.01],
+    mobilePosition: [0.0, 0.32, 0.45],
+    mobileRotation: [0, 0.0, 0.0],
   },
   {
     id: 4,
@@ -35,6 +41,8 @@ export const MEME_ITEMS = [
     caption: '-100.00% liquidated. Taking the last bus home.',
     position: [1.78, 0.78, -0.35],
     rotation: [0, -0.18, 0.015],
+    mobilePosition: [-0.78, -0.82, 0.35],
+    mobileRotation: [0, 0.1, -0.015],
   },
   {
     id: 5,
@@ -43,13 +51,19 @@ export const MEME_ITEMS = [
     caption: 'The only dinner the portfolio can still afford.',
     position: [3.45, 0.35, -1.15],
     rotation: [0, -0.36, -0.02],
+    mobilePosition: [0.78, -0.82, 0.35],
+    mobileRotation: [0, -0.1, 0.015],
   },
 ]
 
-function HologramCard({ item, index, onSelect }) {
+function HologramCard({ item, index, onSelect, isMobile }) {
   const groupRef = useRef()
   const [hovered, setHovered] = useState(false)
   const texture = useTexture(item.src)
+
+  const basePos = isMobile ? item.mobilePosition : item.position
+  const baseRot = isMobile ? item.mobileRotation : item.rotation
+  const baseScale = isMobile ? 0.68 : 1.0
 
   // Configure crisp texture sampling
   useMemo(() => {
@@ -125,11 +139,16 @@ function HologramCard({ item, index, onSelect }) {
     )
 
     if (!groupRef.current) return
-    const floatY = Math.sin(t * 1.45 + index * 1.15) * 0.12
-    const targetY = item.position[1] + floatY + (hovered ? 0.14 : 0)
-    const targetZ = item.position[2] + (hovered ? 0.32 : 0)
-    const targetScale = hovered ? 1.09 : 1.0
+    const floatY = Math.sin(t * 1.45 + index * 1.15) * (isMobile ? 0.08 : 0.12)
+    const targetY = basePos[1] + floatY + (hovered ? 0.12 : 0)
+    const targetZ = basePos[2] + (hovered ? 0.28 : 0)
+    const targetScale = baseScale * (hovered ? 1.09 : 1.0)
 
+    groupRef.current.position.x = THREE.MathUtils.lerp(
+      groupRef.current.position.x,
+      basePos[0],
+      0.1
+    )
     groupRef.current.position.y = THREE.MathUtils.lerp(
       groupRef.current.position.y,
       targetY,
@@ -144,9 +163,9 @@ function HologramCard({ item, index, onSelect }) {
       THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.1)
     )
     groupRef.current.rotation.y =
-      item.rotation[1] + Math.sin(t * 0.7 + index) * 0.04
+      baseRot[1] + Math.sin(t * 0.7 + index) * 0.04
     groupRef.current.rotation.z =
-      item.rotation[2] + Math.cos(t * 0.9 + index) * 0.015
+      baseRot[2] + Math.cos(t * 0.9 + index) * 0.015
   })
 
   const frameW = 1.48
@@ -158,8 +177,9 @@ function HologramCard({ item, index, onSelect }) {
       {/* Floating Hologram Card */}
       <group
         ref={groupRef}
-        position={item.position}
-        rotation={item.rotation}
+        position={basePos}
+        rotation={baseRot}
+        scale={baseScale}
         onClick={(e) => {
           e.stopPropagation()
           onSelect(item)
@@ -224,26 +244,28 @@ function HologramCard({ item, index, onSelect }) {
         </mesh>
       </group>
 
-      {/* Glowing Voxel Holo-Projector Pad hovering just above the water */}
-      <group position={[item.position[0], -1.35, item.position[2]]}>
-        <mesh>
-          <boxGeometry args={[0.52, 0.1, 0.52]} />
-          <meshStandardMaterial
-            color="#1e1b4b"
-            metalness={0.5}
-            roughness={0.3}
-          />
-        </mesh>
-        <mesh position={[0, 0.07, 0]}>
-          <boxGeometry args={[0.32, 0.04, 0.32]} />
-          <meshBasicMaterial color="#22d3ee" toneMapped={false} />
-        </mesh>
-      </group>
+      {/* Glowing Voxel Holo-Projector Pad hovering just above the water (desktop) */}
+      {!isMobile && (
+        <group position={[item.position[0], -1.35, item.position[2]]}>
+          <mesh>
+            <boxGeometry args={[0.52, 0.1, 0.52]} />
+            <meshStandardMaterial
+              color="#1e1b4b"
+              metalness={0.5}
+              roughness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 0.07, 0]}>
+            <boxGeometry args={[0.32, 0.04, 0.32]} />
+            <meshBasicMaterial color="#22d3ee" toneMapped={false} />
+          </mesh>
+        </group>
+      )}
     </group>
   )
 }
 
-export default function HologramGallery({ onSelectMeme }) {
+export default function HologramGallery({ onSelectMeme, isMobile = false }) {
   return (
     <group>
       {MEME_ITEMS.map((item, idx) => (
@@ -252,6 +274,7 @@ export default function HologramGallery({ onSelectMeme }) {
           item={item}
           index={idx}
           onSelect={onSelectMeme}
+          isMobile={isMobile}
         />
       ))}
     </group>

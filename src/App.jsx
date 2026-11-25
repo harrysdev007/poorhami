@@ -128,12 +128,12 @@ export default function App() {
     out.height = outSize
     const ctx = out.getContext('2d')
 
-    // Center-crop square from the live WebGL canvas
+    // Crop square centered on the hamster (upper-center on mobile portrait, dead-center on desktop)
     const sw = srcCanvas.width
     const sh = srcCanvas.height
     const crop = Math.min(sw, sh)
     const sx = (sw - crop) / 2
-    const sy = (sh - crop) / 2
+    const sy = sw < sh ? Math.max(0, sh * 0.34 - crop / 2) : (sh - crop) / 2
 
     ctx.drawImage(srcCanvas, sx, sy, crop, crop, 0, 0, outSize, outSize)
 
@@ -290,24 +290,26 @@ export default function App() {
               </button>
             )}
 
-            <a
-              href="https://x.com/poorhami_sol"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="x-pill"
-              title="Follow @poorhami_sol on X"
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+            {page !== 'pfp' && (
+              <a
+                href="https://x.com/poorhami_sol"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="x-pill"
+                title="Follow @poorhami_sol on X"
               >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              <span>@poorhami_sol</span>
-            </a>
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                <span>@poorhami_sol</span>
+              </a>
+            )}
           </div>
         </header>
 

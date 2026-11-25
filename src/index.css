@@ -22,7 +22,9 @@ body,
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 .canvas-layer {
@@ -443,9 +445,150 @@ body,
   box-shadow: 0 0 30px rgba(34, 211, 238, 0.65);
 }
 
-@media (max-width: 720px) {
-  .holo-prev { left: 10px; }
-  .holo-next { right: 10px; }
+@media (max-width: 768px) {
+  .ui-layer {
+    padding: max(12px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  .top-nav {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    gap: 8px;
+  }
+
+  .brand-pill {
+    padding: 7px 12px;
+    gap: 7px;
+  }
+
+  .brand-name {
+    font-size: 11px;
+  }
+
+  .x-pill {
+    padding: 7px 11px;
+    font-size: 11.5px;
+    gap: 6px;
+  }
+
+  .glass-btn {
+    padding: 7px 11px;
+    font-size: 11.5px;
+  }
+
+  .portal-btn-up {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding: 9px 16px;
+    font-size: 11.5px;
+  }
+
+  .portal-group {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .portal-btn {
+    padding: 11px 16px;
+    font-size: 11.5px;
+    gap: 7px;
+    letter-spacing: 0.06em;
+  }
+
+  .portal-group .portal-btn {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .hamster-toast {
+    right: 50%;
+    transform: translateX(50%);
+    top: 15%;
+    font-size: 12px;
+    padding: 8px 14px;
+    white-space: nowrap;
+  }
+
+  .gallery-tag {
+    font-size: 9.5px;
+    padding: 6px 12px;
+    text-align: center;
+  }
+
+  .hint-pill {
+    display: none;
+  }
+
+  /* Mobile PFP Studio bottom sheet + upper crop frame */
+  .pfp-crop-guide {
+    top: 33%;
+    width: min(64vw, 33vh);
+    height: min(64vw, 33vh);
+    border-radius: 18px;
+  }
+
+  .pfp-panel {
+    width: 100%;
+    max-height: 41dvh;
+    margin-top: auto;
+    padding: 12px 14px 12px;
+    gap: 8px;
+    border-radius: 18px;
+    scrollbar-width: none;
+  }
+
+  .pfp-panel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pfp-panel + .footer-bar {
+    display: none;
+  }
+
+  .pfp-panel-title {
+    font-size: 12px;
+  }
+
+  .pfp-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pfp-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pfp-chip {
+    flex: 0 0 auto;
+    padding: 5px 10px;
+    font-size: 11.5px;
+  }
+
+  .pfp-actions {
+    gap: 8px;
+  }
+
+  .pfp-rand-btn,
+  .pfp-dl-btn {
+    padding: 10px 10px;
+    font-size: 10.5px;
+  }
+
+  .holo-modal-card {
+    max-width: 94vw;
+    padding: 12px;
+  }
+
+  .holo-prev { left: 8px; }
+  .holo-next { right: 8px; }
+  .holo-close-btn { top: 8px; right: 8px; }
 }
 
 .ui-layer {

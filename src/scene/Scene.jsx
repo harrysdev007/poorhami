@@ -1,5 +1,5 @@
 import React, { Suspense, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import {
   ContactShadows,
   Environment,
@@ -25,24 +25,33 @@ import VoxelTitle from './VoxelTitle.jsx'
  * Smooth living camera rig with subtle mouse parallax and gentle breathing drift
  * when OrbitControls is off.
  */
-function CameraRig({ freeCamera }) {
+function CameraRig({ freeCamera, isMobile }) {
   const targetLook = useRef(new THREE.Vector3(0.45, 0.35, -1.2))
   const desiredPos = useRef(new THREE.Vector3(0.15, 0.55, 5.4))
 
   useFrame((state) => {
     if (freeCamera) return
     const t = state.clock.elapsedTime
-    const px = state.pointer.x
-    const py = state.pointer.y
+    const px = isMobile ? state.pointer.x * 0.35 : state.pointer.x
+    const py = isMobile ? state.pointer.y * 0.25 : state.pointer.y
 
-    desiredPos.current.set(
-      0.15 + px * 0.48 + Math.sin(t * 0.35) * 0.08,
-      0.55 + py * 0.24 + Math.cos(t * 0.45) * 0.05,
-      5.4 + Math.sin(t * 0.28) * 0.08
-    )
+    if (isMobile) {
+      desiredPos.current.set(
+        px * 0.35 + Math.sin(t * 0.35) * 0.06,
+        0.85 + py * 0.18 + Math.cos(t * 0.45) * 0.04,
+        6.95 + Math.sin(t * 0.28) * 0.06
+      )
+      targetLook.current.set(px * 0.12, 0.38 + py * 0.1, -0.8)
+    } else {
+      desiredPos.current.set(
+        0.15 + px * 0.48 + Math.sin(t * 0.35) * 0.08,
+        0.55 + py * 0.24 + Math.cos(t * 0.45) * 0.05,
+        5.4 + Math.sin(t * 0.28) * 0.08
+      )
+      targetLook.current.set(0.45 + px * 0.18, 0.32 + py * 0.12, -1.2)
+    }
 
-    state.camera.position.lerp(desiredPos.current, 0.045)
-    targetLook.current.set(0.45 + px * 0.18, 0.32 + py * 0.12, -1.2)
+    state.camera.position.lerp(desiredPos.current, 0.05)
     state.camera.lookAt(targetLook.current)
   })
 
@@ -50,7 +59,12 @@ function CameraRig({ freeCamera }) {
 }
 
 export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
-  const hamsterGroundY = getHillHeight(2.05, 0.65) + 0.02
+  const { size } = useThree()
+  const isMobile = size.width < 768
+
+  const hamsterX = isMobile ? 0.08 : 2.05
+  const hamsterZ = isMobile ? 0.65 : 0.65
+  const hamsterGroundY = getHillHeight(hamsterX, hamsterZ) + 0.02
 
   return (
     <>
@@ -59,7 +73,7 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
       <fog attach="fog" args={['#06259e', 14, 42]} />
 
       {/* Camera controller */}
-      <CameraRig freeCamera={freeCamera} />
+      <CameraRig freeCamera={freeCamera} isMobile={isMobile} />
       {freeCamera && (
         <OrbitControls
           target={[1.2, 0.3, 0.2]}
@@ -109,7 +123,7 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
 
       {/* Subtle green grass bounce light illuminating the hamster's fluffy underside */}
       <pointLight
-        position={[2.0, hamsterGroundY + 0.15, 2.2]}
+        position={[hamsterX, hamsterGroundY + 0.15, 2.2]}
         intensity={0.45}
         distance={4.5}
         color="#4ade80"
@@ -143,22 +157,22 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
 
       {/* === 3D WORLD === */}
       <VoxelSky />
-      <Moon position={[-5.6, 3.7, -14.5]} />
+      <Moon position={isMobile ? [-2.4, 5.4, -14.5] : [-5.6, 3.7, -14.5]} />
       <VoxelMeadow windStrength={windStrength} />
       <Fireflies count={52} />
 
-      {/* Levitating 3D pixel title + subtitle on the left */}
+      {/* Levitating 3D pixel title + subtitle */}
       <VoxelTitle
         text="$POORHAMI"
         subtitle="AVERAGE MEMECOIN TRADER"
-        position={[-1.02, 0.42, 0.45]}
-        rotation={[0.03, 0.16, 0.015]}
-        scale={0.68}
+        position={isMobile ? [0, 1.95, 0.1] : [-1.02, 0.42, 0.45]}
+        rotation={isMobile ? [0.04, 0, 0] : [0.03, 0.16, 0.015]}
+        scale={isMobile ? 0.5 : 0.68}
       />
 
       {/* Grounded contact shadow directly beneath the hamster */}
       <ContactShadows
-        position={[2.05, hamsterGroundY + 0.01, 0.65]}
+        position={[hamsterX, hamsterGroundY + 0.01, hamsterZ]}
         opacity={0.62}
         scale={4.2}
         blur={2.1}
@@ -166,9 +180,14 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
         color="#042f12"
       />
 
-      {/* Compressed 3D Hamster GLB on the right */}
+      {/* Compressed 3D Hamster GLB */}
       <Suspense fallback={null}>
-        <HamsterModel onPoke={onPokeHamster} />
+        <HamsterModel
+          onPoke={onPokeHamster}
+          positionX={hamsterX}
+          positionZ={hamsterZ}
+          baseRotY={isMobile ? -0.05 : -0.22}
+        />
       </Suspense>
 
       {/* === POST-PROCESSING === */}

@@ -4,7 +4,7 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { getHillHeight } from './VoxelMeadow.jsx'
 
-export default function HamsterModel({ onPoke }) {
+export default function HamsterModel({ onPoke, positionX = 2.05, positionZ = 0.65, baseRotY = -0.22 }) {
   const { scene } = useGLTF('/models/hamster.glb', '/draco/')
   const groupRef = useRef()
   const bodyRef = useRef()
@@ -49,13 +49,11 @@ export default function HamsterModel({ onPoke }) {
     return clone
   }, [scene])
 
-  // Position on the right side of the meadow, matching the reference photo
+  // Position on the meadow (right on desktop, centered on mobile)
   const basePos = useMemo(() => {
-    const x = 2.05
-    const z = 0.65
-    const y = getHillHeight(x, z) - 0.02
-    return [x, y, z]
-  }, [])
+    const y = getHillHeight(positionX, positionZ) - 0.02
+    return [positionX, y, positionZ]
+  }, [positionX, positionZ])
 
   const handleClick = (e) => {
     e.stopPropagation()
@@ -92,7 +90,7 @@ export default function HamsterModel({ onPoke }) {
     bodyRef.current.position.y = hopY
 
     // Subtle mouse-tracking look + idle sway
-    const targetRotY = -0.22 + state.pointer.x * 0.24 + Math.sin(t * 0.85) * 0.045
+    const targetRotY = baseRotY + state.pointer.x * 0.24 + Math.sin(t * 0.85) * 0.045
     const targetRotX = -state.pointer.y * 0.08 + Math.sin(t * 1.3) * 0.018
     const targetRotZ = Math.sin(t * 0.9) * 0.025 + hopWiggle
 
