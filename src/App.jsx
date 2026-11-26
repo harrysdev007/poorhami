@@ -27,7 +27,7 @@ const HAMSTER_LINES = [
   "Wallet's empty, bro...",
   'Bought the top again...',
   'Not a single coin left.',
-  '$POORHAMI to the moon?',
+  '$PUMPHAMI to the moon?',
   'Still waiting for payday...',
 ]
 
@@ -60,7 +60,7 @@ function LoadingScreen() {
     <div className="loader-overlay">
       <div className="loader-cube" />
       <div style={{ fontSize: 13, color: '#bae6fd', letterSpacing: '0.06em' }}>
-        LOADING $POORHAMI WORLD... {Math.round(progress)}%
+        LOADING $PUMPHAMI WORLD... {Math.round(progress)}%
       </div>
     </div>
   )
@@ -175,12 +175,12 @@ export default function App() {
       ctx.font = 'bold 24px monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText('$POORHAMI', bx + bw / 2, by + bh / 2 + 1)
+      ctx.fillText('$PUMPHAMI', bx + bw / 2, by + bh / 2 + 1)
       ctx.restore()
     }
 
     const link = document.createElement('a')
-    link.download = `poorhami-pfp-${Date.now()}.png`
+    link.download = `pumphami-pfp-${Date.now()}.png`
     link.href = out.toDataURL('image/png')
     link.click()
 
@@ -283,7 +283,7 @@ export default function App() {
             style={{ cursor: 'pointer' }}
           >
             <span className="brand-dot" />
-            <span className="brand-name">$POORHAMI</span>
+            <span className="brand-name">$PUMPHAMI</span>
           </button>
 
           {page === 'home' ? (
@@ -328,11 +328,11 @@ export default function App() {
 
             {page !== 'pfp' && (
               <a
-                href="https://x.com/poorhami_sol"
+                href="https://x.com/pumphami_sol"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="x-pill"
-                title="Follow @poorhami_sol on X"
+                title="Follow @pumphami_sol on X"
               >
                 <svg
                   width="15"
@@ -343,7 +343,7 @@ export default function App() {
                 >
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-                <span>@poorhami_sol</span>
+                <span>@pumphami_sol</span>
               </a>
             )}
           </div>
@@ -428,7 +428,7 @@ export default function App() {
                 checked={pfpBadge}
                 onChange={(e) => setPfpBadge(e.target.checked)}
               />
-              <span>Include $POORHAMI badge</span>
+              <span>Include $PUMPHAMI badge</span>
             </label>
 
             <div className="pfp-actions">

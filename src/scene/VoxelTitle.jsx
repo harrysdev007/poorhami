@@ -129,6 +129,15 @@ const GLYPHS = {
     '..#..',
     '..#..',
   ],
+  U: [
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '#...#',
+    '.###.',
+  ],
   V: [
     '#...#',
     '#...#',
@@ -236,7 +245,7 @@ function buildLine(text, gapMultiplier = 1) {
 }
 
 export default function VoxelTitle({
-  text = '$POORHAMI',
+  text = '$PUMPHAMI',
   subtitle = 'AVERAGE MEMECOIN TRADER',
   position = [-1.02, 0.42, 0.45],
   rotation = [0.03, 0.16, 0.015],

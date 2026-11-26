@@ -163,7 +163,7 @@ export default function Scene({ freeCamera, windStrength, onPokeHamster }) {
 
       {/* Levitating 3D pixel title + subtitle */}
       <VoxelTitle
-        text="$POORHAMI"
+        text="$PUMPHAMI"
         subtitle="AVERAGE MEMECOIN TRADER"
         position={isMobile ? [0, 1.95, 0.1] : [-1.02, 0.42, 0.45]}
         rotation={isMobile ? [0.04, 0, 0] : [0.03, 0.16, 0.015]}
